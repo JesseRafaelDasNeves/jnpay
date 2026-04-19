@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  postgresbd:
+    image: postgres:18.1
+    container_name: pg_jnpay
+    # networks:
+    #   - rede-series-bridge
+    ports:
+      - 5432:5432
+    volumes:
+      - pgbanco_jnpay:/var/lib/postgresql
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_DATABASE}
+
+# networks:
+#   rede-series-bridge:
+#     driver: bridge
+
+volumes:
+  pgbanco_jnpay:
+    name: pgbanco_jnpay
+    external: false
+    driver: local
