@@ -28,6 +28,17 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
         }).format(amount);
     }
 
+    function classNameStatus(status: string): string {
+        switch (status) {
+            case 'paid':
+                return 'bg-green-100 text-green-800';
+            case 'pending':
+                return 'bg-yellow-100 text-yellow-800';
+            default:
+                return 'bg-red-100 text-red-800';
+        }
+    }
+
     return (
         <>
             <Head title="Faturas" />
@@ -46,9 +57,9 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[100px]">Número</TableHead>
-                            <TableHead className='w-[130px]'>Data Emissão</TableHead>
+                            <TableHead className='w-[130px]'>Data de Emissão</TableHead>
                             <TableHead className='w-[120px]'>Status</TableHead>
-                            <TableHead className="text-right">Valor</TableHead>
+                            <TableHead className="text-right">Valor Total</TableHead>
                             <TableHead className="text-right">
                                 Valor Pago
                             </TableHead>
@@ -64,13 +75,7 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
                                 <TableCell>
                                     <Badge
                                         variant={'outline'}
-                                        className={
-                                            invoice.status === 'paid'
-                                                ? 'bg-green-100 text-green-800'
-                                                : invoice.status === 'pending'
-                                                  ? 'bg-yellow-100 text-yellow-800'
-                                                  : 'bg-red-100 text-red-800'
-                                        }
+                                        className={classNameStatus(invoice.status)}
                                     >
                                         {invoice.status}
                                     </Badge>

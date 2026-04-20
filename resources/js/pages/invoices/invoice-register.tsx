@@ -157,7 +157,7 @@ export default function InvoiceRegister() {
                             {/* items da Fatura Section */}
                             <div>
                                 <div className="mb-4 border-l-2 border-black pl-2 font-mono text-xs tracking-widest text-muted-foreground uppercase">
-                                    items da Fatura
+                                    Itens da Fatura
                                 </div>
 
                                 <div className="space-y-4">
