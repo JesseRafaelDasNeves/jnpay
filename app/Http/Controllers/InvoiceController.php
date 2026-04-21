@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class InvoiceController extends Controller
@@ -14,7 +15,7 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $invoices = Invoice::with('items')->get();
+        $invoices = Invoice::with('items')->orderBy('created_at', 'desc')->get();
         return Inertia::render('invoices/invoice-list', [
             'data' => $invoices,
         ]);
@@ -54,7 +55,10 @@ class InvoiceController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $invoice = Invoice::with('items')->findOrFail($id);
+        return Inertia::render('invoices/invoice-register', [
+            'register' => $invoice,
+        ]);
     }
 
     /**
@@ -62,7 +66,19 @@ class InvoiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        DB::transaction(function () use ($request, $id) {
+            $invoice = Invoice::findOrFail($id);
+            $invoice->update($request->only(['number', 'status', 'issueDate', 'paidAmount']));
+
+            $items = $request->input('items', []);
+            foreach ($items as $item) {
+                $invoice->items()->updateOrCreate(
+                    ['id' => $item['id'] ?? null],
+                    $item
+                );
+            }
+        });
+        return redirect()->route('invoices');
     }
 
     /**

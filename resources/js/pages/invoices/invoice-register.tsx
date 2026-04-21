@@ -1,7 +1,7 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { Trash2, Plus, Calendar as CalendarIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import InvoiceController from '@/actions/App/Http/Controllers/InvoiceController';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
@@ -20,16 +20,20 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { InvoiceStatus  } from '@/interfaces/invoice.interface';
-import type {InvoiceItem} from '@/interfaces/invoice.interface';
+import { descriptionStatusInvoice } from '@/helpers/invoice.helper';
+import { InvoiceStatusE } from '@/interfaces/invoice.interface';
+import type { Invoice, InvoiceItem } from '@/interfaces/invoice.interface';
 
-
-export default function InvoiceRegister() {
+export default function InvoiceRegister({ register }: { register?: Invoice }) {
     const [items, setItems] = useState<InvoiceItem[]>([
         { description: '', amount: '' },
     ]);
     const [date, setDate] = React.useState<Date>();
-    const [status] = React.useState<string>(InvoiceStatus.PENDING);
+    const [status, setStatus] = React.useState<string>(InvoiceStatusE.PENDING);
+    const isEditMode = Boolean(register?.id);
+    const titleHeader = isEditMode ? 'Editar Fatura' : 'Nova Fatura';
+    const buttonTitle = isEditMode ? 'Salvar Alterações' : 'Criar Fatura';
+    const buttonProcessingTitle = isEditMode ? 'Salvando...' : 'Criando...';
 
     const total = items.reduce((sum, item) => {
         const amount =
@@ -39,6 +43,15 @@ export default function InvoiceRegister() {
 
         return sum + amount;
     }, 0);
+
+    useEffect(() => {
+        if (register) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setDate(new Date(register.issueDate));
+            setStatus(register.status);
+            setItems(register.items);
+        }
+    }, [register]);
 
     function handleAddItem() {
         setItems([...items, { description: '', amount: '' }]);
@@ -62,12 +75,17 @@ export default function InvoiceRegister() {
 
     return (
         <>
-            <Head title="Nova Fatura" />
+            <Head title={titleHeader} />
             <div className="bg-white p-6">
-                <h1 className="mb-6 text-3xl font-bold">Nova Fatura</h1>
+                <h1 className="mb-6 text-3xl font-bold">{titleHeader}</h1>
                 <Separator className="mb-6" />
 
-                <Form {...InvoiceController.store.form()} className="space-y-8">
+                <Form
+                    {...(isEditMode
+                        ? InvoiceController.update.form(register!.id)
+                        : InvoiceController.store.form())}
+                    className="space-y-8"
+                >
                     {({
                         processing,
                         errors,
@@ -93,6 +111,7 @@ export default function InvoiceRegister() {
                                             placeholder="FAT-001"
                                             className="block w-full"
                                             required
+                                            defaultValue={register?.number}
                                         />
                                         <InputError
                                             message={errors.number}
@@ -140,6 +159,7 @@ export default function InvoiceRegister() {
                                             name="issueDate"
                                             type="hidden"
                                             required
+                                            defaultValue={register?.issueDate}
                                             value={
                                                 date
                                                     ? format(date, 'yyyy-MM-dd')
@@ -164,6 +184,12 @@ export default function InvoiceRegister() {
                                     {items.map((item, index) => (
                                         <div key={index}>
                                             <div className="flex items-end gap-3">
+                                                <Input
+                                                    id={`items-${index}-id`}
+                                                    name={`items[${index}][id]`}
+                                                    type="hidden"
+                                                    defaultValue={item.id}
+                                                />
                                                 <div className="grid flex-1 gap-2">
                                                     {index === 0 && (
                                                         <Label
@@ -293,11 +319,7 @@ export default function InvoiceRegister() {
                                     value={status}
                                 />
                                 <Badge variant="outline">
-                                    {status === InvoiceStatus.PENDING
-                                        ? 'PENDENTE'
-                                        : status === InvoiceStatus.PARTIALLY_PAID
-                                        ? 'PARCIALMENTE PAGO'
-                                        : 'PAGO'}
+                                    {descriptionStatusInvoice(status)}
                                 </Badge>
                                 <span className="font-mono text-lg font-bold">
                                     Valor Total: R$ {total.toFixed(2)}
@@ -311,12 +333,18 @@ export default function InvoiceRegister() {
                                         variant="outline"
                                         type="button"
                                         disabled={processing}
+                                        className="cursor-pointer"
                                     >
                                         Cancelar
                                     </Button>
                                 </Link>
-                                <Button disabled={processing}>
-                                    {processing ? 'Criando...' : 'Criar Fatura'}
+                                <Button
+                                    disabled={processing}
+                                    className="cursor-pointer"
+                                >
+                                    {processing
+                                        ? buttonProcessingTitle
+                                        : buttonTitle}
                                 </Button>
                             </div>
                         </>

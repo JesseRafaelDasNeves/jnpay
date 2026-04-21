@@ -1,4 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
+import { SquarePen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,13 +10,18 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { descriptionStatusInvoice } from '@/helpers/invoice.helper';
+import { InvoiceStatusE } from '@/interfaces/invoice.interface';
 import type { Invoice } from '@/interfaces/invoice.interface';
-import { create } from '@/routes/invoices';
+import { create, edit } from '@/routes/invoices';
 
 export default function InvoiceList({ data }: { data: Invoice[] }) {
     function sumAmountItems(items: Invoice['items']): number {
         return items.reduce((total, item) => {
-            const amount = typeof item.amount === 'number' ? item.amount : parseFloat(item.amount as string) || 0;
+            const amount =
+                typeof item.amount === 'number'
+                    ? item.amount
+                    : parseFloat(item.amount as string) || 0;
 
             return total + amount;
         }, 0);
@@ -28,14 +34,14 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
         }).format(amount);
     }
 
-    function classNameStatus(status: string): string {
+    function classNameStatus(status: InvoiceStatusE): string {
         switch (status) {
-            case 'paid':
+            case InvoiceStatusE.PAID:
                 return 'bg-green-100 text-green-800';
-            case 'pending':
-                return 'bg-yellow-100 text-yellow-800';
-            default:
+            case InvoiceStatusE.PENDING:
                 return 'bg-red-100 text-red-800';
+            default:
+                return 'bg-yellow-100 text-yellow-800';
         }
     }
 
@@ -57,12 +63,17 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[100px]">Número</TableHead>
-                            <TableHead className='w-[130px]'>Data de Emissão</TableHead>
-                            <TableHead className='w-[120px]'>Status</TableHead>
-                            <TableHead className="text-right">Valor Total</TableHead>
-                            <TableHead className="text-right">
+                            <TableHead className="w-[130px]">
+                                Data de Emissão
+                            </TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="w-[150px] text-right">
+                                Valor Total
+                            </TableHead>
+                            <TableHead className="w-[150px] text-right">
                                 Valor Pago
                             </TableHead>
+                            <TableHead className="w-[100px]">Ações</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -75,16 +86,28 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
                                 <TableCell>
                                     <Badge
                                         variant={'outline'}
-                                        className={classNameStatus(invoice.status)}
+                                        className={classNameStatus(
+                                            invoice.status,
+                                        )}
                                     >
-                                        {invoice.status}
+                                        {descriptionStatusInvoice(invoice.status)}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    {formatCurrency(sumAmountItems(invoice.items))}
+                                    {formatCurrency(
+                                        sumAmountItems(invoice.items),
+                                    )}
                                 </TableCell>
                                 <TableCell className="text-right">
                                     {formatCurrency(invoice.paidAmount || 0)}
+                                </TableCell>
+                                <TableCell>
+                                    <Link
+                                        href={edit(invoice.id).url}
+                                        className="text-primary hover:underline"
+                                    >
+                                        <SquarePen className="h-4 w-4" />
+                                    </Link>
                                 </TableCell>
                             </TableRow>
                         ))}
