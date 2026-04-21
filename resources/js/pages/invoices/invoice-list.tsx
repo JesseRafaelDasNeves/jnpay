@@ -1,5 +1,18 @@
-import { Head, Link } from '@inertiajs/react';
-import { SquarePen } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { SquarePen, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogMedia,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,9 +26,11 @@ import {
 import { descriptionStatusInvoice } from '@/helpers/invoice.helper';
 import { InvoiceStatusE } from '@/interfaces/invoice.interface';
 import type { Invoice } from '@/interfaces/invoice.interface';
-import { create, edit } from '@/routes/invoices';
+import { create, destroy, edit } from '@/routes/invoices';
 
 export default function InvoiceList({ data }: { data: Invoice[] }) {
+    const [invoiceToDelete, setInvoiceToDelete] = useState<number | null>(null);
+
     function sumAmountItems(items: Invoice['items']): number {
         return items.reduce((total, item) => {
             const amount =
@@ -62,18 +77,20 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[100px]">Número</TableHead>
-                            <TableHead className="w-[130px]">
+                            <TableHead className="w-25">Número</TableHead>
+                            <TableHead className="w-32.5">
                                 Data de Emissão
                             </TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead className="w-[150px] text-right">
+                            <TableHead className="w-37.5 text-right">
                                 Valor Total
                             </TableHead>
-                            <TableHead className="w-[150px] text-right">
+                            <TableHead className="w-37.5 text-right">
                                 Valor Pago
                             </TableHead>
-                            <TableHead className="w-[100px]">Ações</TableHead>
+                            <TableHead className="w-25 text-right">
+                                Ações
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -90,7 +107,9 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
                                             invoice.status,
                                         )}
                                     >
-                                        {descriptionStatusInvoice(invoice.status)}
+                                        {descriptionStatusInvoice(
+                                            invoice.status,
+                                        )}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
@@ -101,13 +120,85 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
                                 <TableCell className="text-right">
                                     {formatCurrency(invoice.paidAmount || 0)}
                                 </TableCell>
-                                <TableCell>
-                                    <Link
-                                        href={edit(invoice.id).url}
-                                        className="text-primary hover:underline"
-                                    >
-                                        <SquarePen className="h-4 w-4" />
-                                    </Link>
+                                <TableCell className="flex justify-end">
+                                    <div className="flex items-center gap-2">
+                                        <Link
+                                            href={edit(invoice.id)}
+                                            className="text-primary hover:underline"
+                                            title='Editar'
+                                        >
+                                            <SquarePen className="h-4 w-4" />
+                                        </Link>
+                                        <AlertDialog
+                                            open={
+                                                invoiceToDelete === invoice.id
+                                            }
+                                            onOpenChange={(open) => {
+                                                if (!open) {
+                                                    setInvoiceToDelete(null);
+                                                }
+                                            }}
+                                        >
+                                            <AlertDialogTrigger asChild>
+                                                <Button
+                                                    variant="link"
+                                                    style={{ padding: 0 }}
+                                                    className="h-4 w-4 cursor-pointer"
+                                                    title='Excluir'
+                                                    onClick={() =>
+                                                        setInvoiceToDelete(
+                                                            invoice.id,
+                                                        )
+                                                    }
+                                                >
+                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+                                                        <Trash2 />
+                                                    </AlertDialogMedia>
+                                                    <AlertDialogTitle>
+                                                        Tem certeza que deseja
+                                                        excluir esta fatura?
+                                                    </AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Esta ação não pode ser
+                                                        desfeita. Isso irá
+                                                        excluir a fatura.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel
+                                                        className='cursor-pointer'
+                                                        onClick={() =>
+                                                            setInvoiceToDelete(
+                                                                null,
+                                                            )
+                                                        }
+                                                    >
+                                                        Cancelar
+                                                    </AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        className='cursor-pointer'
+                                                        onClick={() => {
+                                                            router.delete(
+                                                                destroy(
+                                                                    invoice.id,
+                                                                ).url,
+                                                            );
+                                                            setInvoiceToDelete(
+                                                                null,
+                                                            );
+                                                        }}
+                                                    >
+                                                        Continuar
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}
