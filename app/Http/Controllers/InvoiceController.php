@@ -77,12 +77,8 @@ class InvoiceController extends Controller
             $invoice->update($request->only(['number', 'status', 'issueDate', 'paidAmount']));
 
             $items = $request->input('items', []);
-            foreach ($items as $item) {
-                $invoice->items()->updateOrCreate(
-                    ['id' => $item['id'] ?? null],
-                    $item
-                );
-            }
+            $invoice->items()->delete();
+            $invoice->items()->createMany($items);
         });
         return redirect()->route('invoices');
     }
