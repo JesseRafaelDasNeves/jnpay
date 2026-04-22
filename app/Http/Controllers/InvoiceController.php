@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\InvoiceStatus;
 use App\Http\Requests\InvoiceRequest;
+use App\Http\Requests\PaymentInvoiceRequest;
 use App\Models\Invoice;
 use DB;
 use Illuminate\Http\Request;
@@ -108,7 +109,7 @@ class InvoiceController extends Controller
     /**
      * Update Pay invoice
      */
-    public function updatePay(Request $request, string $id)
+    public function updatePay(PaymentInvoiceRequest $request, string $id)
     {
         $invoice = Invoice::with('items')->findOrFail($id);
         $currentPayment = (float)$invoice->paidAmount;
@@ -120,9 +121,7 @@ class InvoiceController extends Controller
         
         // Validação: impedir pagamento superior ao total
         if ($paidAmountNew > $totalAmount) {
-            throw ValidationException::withMessages([
-                'paidAmount' => 'O valor a pagar não pode exceder o total da fatura. Máximo permitido: R$ ' . number_format($totalAmount - $currentPayment, 2, ',', '.')
-            ]);
+            $request->validateLimitPaidAmount($currentPayment, $totalAmount);
         }
         
         $paidProportion = $paidAmountNew / $totalAmount;
