@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices');
+    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
 
     Route::get('invoices/create', [InvoiceController::class, 'create'])->name('invoices.create');
     Route::post('invoices', [InvoiceController::class, 'store'])->name('invoices.store');

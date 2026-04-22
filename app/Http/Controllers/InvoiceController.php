@@ -51,7 +51,9 @@ class InvoiceController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return Inertia::render('invoices/invoice-show', [
+            'register' => Invoice::with('items')->findOrFail($id),
+        ]); 
     }
 
     /**
