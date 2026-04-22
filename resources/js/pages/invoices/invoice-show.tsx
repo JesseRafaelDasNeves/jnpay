@@ -46,7 +46,7 @@ export default function InvoiceShow({ register }: { register: Invoice }) {
 
     return (
         <>
-            <Head title="Pagar Fatura" />
+            <Head title="Detalhes da Fatura" />
             <div className="min-h-screen bg-background p-6">
                 <div className="mx-auto max-w-7xl space-y-6">
                     {/* Header Section */}
@@ -54,7 +54,7 @@ export default function InvoiceShow({ register }: { register: Invoice }) {
                         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
                             <div className="space-y-2">
                                 <h1 className="text-4xl font-bold">
-                                    Realizar Pagamento
+                                    Detalhes da Fatura
                                 </h1>
                                 <p className="max-w-2xl text-base text-muted-foreground">
                                     Gerenciamento de faturas em aberto.

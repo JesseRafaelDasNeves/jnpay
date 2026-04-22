@@ -45,7 +45,7 @@ export default function InvoicePay({ register }: { register: Invoice }) {
 
     return (
         <>
-            <Head title="Detalhes da Fatura" />
+            <Head title="Pagar Fatura" />
             <div className="min-h-screen bg-background p-6">
                 <div className="mx-auto max-w-7xl space-y-6">
                     {/* Header Section */}
@@ -53,7 +53,7 @@ export default function InvoicePay({ register }: { register: Invoice }) {
                         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
                             <div className="space-y-2">
                                 <h1 className="text-4xl font-bold">
-                                    Detalhes da Fatura
+                                    Realizar Pagamento
                                 </h1>
                                 <p className="max-w-2xl text-base text-muted-foreground">
                                     Gerenciamento de faturas em aberto.
