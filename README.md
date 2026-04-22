@@ -114,6 +114,8 @@ Caso prefira rodar o projeto diretamente em sua máquina:
 
    **Terminal 1 (Backend e Frontend/Vite):**
 
+   _Antes de executar o comando abaixo, certifique-se de que o atributo `DB_HOST` em seu arquivo `.env` esteja configurado como `127.0.0.1`._
+
    ```bash
    composer run dev
    ```
