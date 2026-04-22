@@ -13,6 +13,15 @@ As principais tecnologias utilizadas são:
 
 ---
 
+## 🔍 Revisão de Código (Onde começar?)
+
+Se você está revisando este projeto, os principais pontos de interesse que demonstram a arquitetura e as regras de negócio estão aqui:
+
+- **Backend (Lógica de Negócio):** Explore [`app/Http/Controllers`](./app/Http/Controllers) para entender como as faturas e pagamentos são processados.
+- **Frontend (Interface e Estado):** Explore [`resources/js/pages`](./resources/js/pages) para ver a implementação das telas em React, TypeScript e a integração com o Inertia.js.
+
+---
+
 ## 🛠️ Pré-requisitos
 
 Antes de começar, você precisará ter instalado em sua máquina:
@@ -38,20 +47,20 @@ Esta é a forma mais simples e rápida de rodar o projeto, garantindo que o ambi
 1. **Configurar Ambiente:**
    Copie o arquivo de exemplo para o arquivo definitivo:
 
-    ```bash
-    cp .env.example .env
-    ```
+   ```bash
+   cp .env.example .env
+   ```
 
-    _Certifique-se de que `DB_HOST` em seu `.env` esteja como `postgresbd` (o nome do serviço definido no Docker Compose)._
+   _Certifique-se de que `DB_HOST` em seu `.env` esteja como `postgresbd` (o nome do serviço definido no Docker Compose)._
 
 2. **Subir os Containers:**
    Execute o comando abaixo na raiz do projeto:
 
-    ```bash
-    docker-compose up -d
-    ```
+   ```bash
+   docker compose up
+   ```
 
-    _O Docker irá baixar as imagens, instalar as dependências do Composer e NPM, rodar as migrações e subir o servidor automaticamente._
+   _O Docker irá baixar as imagens, instalar as dependências do Composer e NPM, rodar as migrações e subir o servidor automaticamente._
 
 3. **Acessar a Aplicação:**
    A aplicação estará disponível em: [http://localhost:8000](http://localhost:8000)
@@ -64,49 +73,56 @@ Caso prefira rodar o projeto diretamente em sua máquina:
 
 1. **Instalar Dependências PHP:**
 
-    ```bash
-    composer install
-    ```
+   ```bash
+   composer install
+   ```
 
-2. **Instalar Dependências JavaScript:**
+2. **Instalar o Node.js**
 
-    ```bash
-    npm install
-    ```
+   ```bash
+   nvm install 24
+   nvm use 24
+   ```
 
-3. **Configurar Variáveis de Ambiente:**
+3. **Instalar Dependências JavaScript:**
+
+   ```bash
+   npm install
+   ```
+
+4. **Configurar Variáveis de Ambiente:**
    Copie o arquivo `.env.example` para `.env` e configure suas credenciais de banco de dados locais.
 
-    ```bash
-    cp .env.example .env
-    ```
+   ```bash
+   cp .env.example .env
+   ```
 
-4. **Gerar Chave da Aplicação:**
+5. **Gerar Chave da Aplicação:**
 
-    ```bash
-    php artisan key:generate
-    ```
+   ```bash
+   php artisan key:generate
+   ```
 
-5. **Executar Migrações:**
+6. **Executar Migrações:**
 
-    ```bash
-    php artisan migrate
-    ```
+   ```bash
+   php artisan migrate
+   ```
 
-6. **Iniciar o Servidor de Desenvolvimento:**
+7. **Iniciar o Servidor de Desenvolvimento:**
    Você precisará de dois terminais abertos:
 
-    **Terminal 1 (Backend):**
+   **Terminal 1 (Backend e Frontend/Vite):**
 
-    ```bash
-    php artisan serve
-    ```
+   ```bash
+   composer run dev
+   ```
 
-    **Terminal 2 (Frontend/Vite):**
+   **Terminal 2 (Banco de Dados):**
 
-    ```bash
-    npm run dev
-    ```
+   ```bash
+   docker compose up postgresbd
+   ```
 
 ---
 
@@ -127,14 +143,14 @@ O sistema permite pagamentos flexíveis, seguindo a lógica:
 - O usuário informa o valor que deseja pagar.
 - **Distribuição Proporcional**: O valor pago é distribuído entre todos os itens da fatura com base no peso de cada um no valor total.
 - **Exemplo de Cálculo**:
-    - **Fatura Total**: R$ 100,00
-    - **Item 1**: R$ 40,00 (40% do total)
-    - **Item 2**: R$ 60,00 (60% do total)
-    - **Pagamento Realizado**: R$ 50,00
-    - **Resultado**: O Item 1 recebe R$ 20,00 (50% do seu valor) e o Item 2 recebe R$ 30,00 (50% do seu valor).
+  - **Fatura Total**: R$ 100,00
+  - **Item 1**: R$ 40,00 (40% do total)
+  - **Item 2**: R$ 60,00 (60% do total)
+  - **Pagamento Realizado**: R$ 50,00
+  - **Resultado**: O Item 1 recebe R$ 20,00 (50% do seu valor) e o Item 2 recebe R$ 30,00 (50% do seu valor).
 - **Status da Fatura**:
-    - Se o valor pago for menor que o total: o status muda para **"PARCIALMENTE_PAGO"**.
-    - Se o valor pago atingir 100% do total: o status muda para **"PAGO"** e todos os itens ficam com `percentualPago = 100`.
+  - Se o valor pago for menor que o total: o status muda para **"PARCIALMENTE_PAGO"**.
+  - Se o valor pago atingir 100% do total: o status muda para **"PAGO"** e todos os itens ficam com `percentualPago = 100`.
 
 ### 3. Validações de Consistência
 
