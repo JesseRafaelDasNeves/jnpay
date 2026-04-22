@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { SquarePen, Trash2 } from 'lucide-react';
+import { CreditCard, SquarePen, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import {
     AlertDialog,
@@ -26,7 +26,7 @@ import {
 import { descriptionStatusInvoice } from '@/helpers/invoice.helper';
 import { InvoiceStatusE } from '@/interfaces/invoice.interface';
 import type { Invoice } from '@/interfaces/invoice.interface';
-import { create, destroy, edit } from '@/routes/invoices';
+import { create, destroy, edit, pay } from '@/routes/invoices';
 
 export default function InvoiceList({ data }: { data: Invoice[] }) {
     const [invoiceToDelete, setInvoiceToDelete] = useState<number | null>(null);
@@ -122,13 +122,16 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
                                 </TableCell>
                                 <TableCell className="flex justify-end">
                                     <div className="flex items-center gap-2">
-                                        <Link
-                                            href={edit(invoice.id)}
-                                            className="text-primary hover:underline"
+                                        <Button
+                                            variant="link"
+                                            style={{ padding: 0 }}
+                                            className="h-4 w-4 cursor-pointer text-primary hover:underline"
                                             title='Editar'
+                                            disabled={invoice.status !== InvoiceStatusE.PENDING}
+                                            onClick={() => router.get(edit(invoice.id).url)}
                                         >
                                             <SquarePen className="h-4 w-4" />
-                                        </Link>
+                                        </Button>
                                         <AlertDialog
                                             open={
                                                 invoiceToDelete === invoice.id
@@ -145,6 +148,7 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
                                                     style={{ padding: 0 }}
                                                     className="h-4 w-4 cursor-pointer"
                                                     title='Excluir'
+                                                    disabled={invoice.status !== InvoiceStatusE.PENDING}
                                                     onClick={() =>
                                                         setInvoiceToDelete(
                                                             invoice.id,
@@ -198,6 +202,13 @@ export default function InvoiceList({ data }: { data: Invoice[] }) {
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>
                                         </AlertDialog>
+                                        <Link
+                                            href={pay(invoice.id)}
+                                            className="text-primary hover:underline"
+                                            title='Pagar'
+                                        >
+                                            <CreditCard className="h-4 w-4" />
+                                        </Link>
                                     </div>
                                 </TableCell>
                             </TableRow>

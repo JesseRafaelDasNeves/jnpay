@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class InvoiceController extends Controller
@@ -89,5 +91,54 @@ class InvoiceController extends Controller
         $invoice = Invoice::findOrFail($id);
         $invoice->delete();
         return redirect()->route('invoices');
+    }
+
+    /**
+     * Pay invoice
+     */
+    public function pay(string $id)
+    {
+        $invoice = Invoice::with('items')->findOrFail($id);
+        return Inertia::render('invoices/invoice-pay', [
+            'register' => $invoice,
+        ]);
+    }
+
+    /**
+     * Update Pay invoice
+     */
+    public function updatePay(Request $request, string $id)
+    {
+        $invoice = Invoice::with('items')->findOrFail($id);
+        $currentPayment = (float)$invoice->paidAmount;
+        $totalAmount = $invoice->items->sum(function ($item) {
+            return (float)$item->amount;
+        }); 
+        $paidAmontInput = (float)$request->input('paidAmount', 0);
+        $paidAmountNew = $paidAmontInput + $currentPayment;
+        
+        // Validação: impedir pagamento superior ao total
+        if ($paidAmountNew > $totalAmount) {
+            throw ValidationException::withMessages([
+                'paidAmount' => 'O valor a pagar não pode exceder o total da fatura. Máximo permitido: R$ ' . number_format($totalAmount - $currentPayment, 2, ',', '.')
+            ]);
+        }
+        
+        $paidProportion = $paidAmountNew / $totalAmount;
+
+        DB::transaction(function () use ($invoice, $paidAmountNew, $paidProportion, $totalAmount) {
+            $invoice->update([
+                'paidAmount' => $paidAmountNew,
+                'status' => $paidAmountNew === $totalAmount ? InvoiceStatus::PAID->value : InvoiceStatus::PARTIALLY_PAID->value,
+            ]);
+
+            foreach ($invoice->items as $item) {                
+                $item->update([
+                    'percentagePaid' => $paidProportion * 100,
+                ]);
+            }
+        });
+
+        return redirect()->route('invoices'); 
     }
 }

@@ -13,4 +13,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('invoices/update/{invoice}', [InvoiceController::class, 'update'])->name('invoices.update');
 
     Route::delete('invoices/destroy/{invoice}', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
+
+    Route::get('invoices/pay/{invoice}', [InvoiceController::class, 'pay'])->name('invoices.pay');
+    Route::put('invoices/update-pay/{invoice}', [InvoiceController::class, 'updatePay'])->name('invoices.update-pay');
 });
