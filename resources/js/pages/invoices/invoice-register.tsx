@@ -76,7 +76,7 @@ export default function InvoiceRegister({ register }: { register?: Invoice }) {
     return (
         <>
             <Head title={titleHeader} />
-            <div className="bg-white p-6">
+            <div className="p-6">
                 <h1 className="mb-6 text-3xl font-bold">{titleHeader}</h1>
                 <Separator className="mb-6" />
 
@@ -174,7 +174,7 @@ export default function InvoiceRegister({ register }: { register?: Invoice }) {
 
                             {/* items da Fatura Section */}
                             <div>
-                                <div className="mb-4 border-l-2 border-black pl-2 font-mono text-xs tracking-widest text-muted-foreground uppercase">
+                                <div className="mb-4 border-l-2 pl-2 font-mono text-xs tracking-widest text-muted-foreground uppercase">
                                     Itens da Fatura
                                 </div>
 
