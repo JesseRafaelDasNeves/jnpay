@@ -1,25 +1,52 @@
 version: "3.9"
+
 services:
   postgresbd:
     image: postgres:18.1
     container_name: pg_jnpay
-    # networks:
-    #   - rede-series-bridge
-    ports:
-      - 5432:5432
-    volumes:
-      - pgbanco_jnpay:/var/lib/postgresql
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgbanco_jnpay:/var/lib/postgresql/data
+    networks:
+      - jnpay-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-# networks:
-#   rede-series-bridge:
-#     driver: bridge
+  laravel-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_jnpay
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgresbd:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    networks:
+      - jnpay-network
+    command: >
+      sh -c "sleep 10 &&
+            php artisan migrate &&
+            npm install &&
+            npm run build &&
+            php artisan serve --host=0.0.0.0"
 
 volumes:
   pgbanco_jnpay:
-    name: pgbanco_jnpay
-    external: false
     driver: local
+
+networks:
+  jnpay-network:
+    driver: bridge
