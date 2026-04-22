@@ -110,7 +110,6 @@ export default function InvoiceRegister({ register }: { register?: Invoice }) {
                                             name="number"
                                             placeholder="FAT-001"
                                             className="block w-full"
-                                            required
                                             defaultValue={register?.number}
                                         />
                                         <InputError
@@ -158,7 +157,6 @@ export default function InvoiceRegister({ register }: { register?: Invoice }) {
                                             id="issueDate"
                                             name="issueDate"
                                             type="hidden"
-                                            required
                                             defaultValue={register?.issueDate}
                                             value={
                                                 date
@@ -315,7 +313,6 @@ export default function InvoiceRegister({ register }: { register?: Invoice }) {
                                     id="status"
                                     name="status"
                                     type="hidden"
-                                    required
                                     value={status}
                                 />
                                 <Badge variant="outline">

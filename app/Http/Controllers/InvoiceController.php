@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\InvoiceStatus;
+use App\Http\Requests\InvoiceRequest;
 use App\Models\Invoice;
 use DB;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class InvoiceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(InvoiceRequest $request)
     {
         DB::transaction(function () use ($request) {
             $invoice = Invoice::create($request->only(['number', 'status', 'issueDate', 'paidAmount']));
@@ -66,7 +67,7 @@ class InvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(InvoiceRequest $request, string $id)
     {
         DB::transaction(function () use ($request, $id) {
             $invoice = Invoice::findOrFail($id);
