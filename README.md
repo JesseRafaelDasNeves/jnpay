@@ -115,12 +115,15 @@ Caso prefira rodar o projeto diretamente em sua máquina:
 O sistema implementa uma lógica rigorosa de faturamento e pagamentos, centralizada no método `updatePay` do `InvoiceController`.
 
 ### 1. Criação de Fatura
+
 - Uma fatura deve conter obrigatoriamente pelo menos um item.
 - O valor total da fatura é calculado automaticamente pela soma dos valores de seus itens.
 - O status inicial de toda nova fatura é **"PENDENTE"**.
 
 ### 2. Pagamento Parcial e Proporcionalidade
+
 O sistema permite pagamentos flexíveis, seguindo a lógica:
+
 - O usuário informa o valor que deseja pagar.
 - **Distribuição Proporcional**: O valor pago é distribuído entre todos os itens da fatura com base no peso de cada um no valor total.
 - **Exemplo de Cálculo**:
@@ -134,6 +137,7 @@ O sistema permite pagamentos flexíveis, seguindo a lógica:
     - Se o valor pago atingir 100% do total: o status muda para **"PAGO"** e todos os itens ficam com `percentualPago = 100`.
 
 ### 3. Validações de Consistência
+
 - **Limite de Pagamento**: Não é permitido registrar um pagamento que resulte em um valor total superior ao valor da fatura.
 - **Vínculo de Itens**: Itens só podem ser associados a faturas existentes.
 - **Integridade**: O valor total da fatura deve ser sempre consistente com a soma dos itens relacionados.
@@ -145,14 +149,26 @@ O sistema permite pagamentos flexíveis, seguindo a lógica:
 Após iniciar a aplicação, siga as orientações abaixo para o primeiro acesso:
 
 ### 📝 Primeiro Acesso (Registro)
+
 1. Na tela inicial, localize e clique no botão **Registrar** (Register).
 2. Preencha os campos solicitados (Nome, E-mail e Senha) para criar sua conta.
 3. Após o registro, você será redirecionado para o dashboard do sistema.
 
 ### 🔓 Acessos Posteriores (Login)
+
 1. Caso já possua uma conta, clique em **Login**.
 2. Informe suas credenciais de acesso (E-mail e Senha) cadastradas anteriormente.
 3. Clique em acessar para entrar no sistema.
+
+---
+
+## 📖 Documentação da API (Scramble)
+
+O projeto conta com documentação automática das rotas de API, facilitando a integração e testes dos endpoints.
+
+- **URL de Acesso:** [http://localhost:8000/docs/api](http://localhost:8000/docs/api)
+
+A documentação detalha os payloads necessários, tipos de dados e respostas esperadas para cada operação de faturamento.
 
 ---
 
