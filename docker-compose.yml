@@ -45,7 +45,7 @@ services:
 
 volumes:
   pgbanco_jnpay:
-    driver: local
+    external: true
 
 networks:
   jnpay-network:

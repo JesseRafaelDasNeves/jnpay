@@ -13,6 +13,49 @@ As principais tecnologias utilizadas são:
 
 ---
 
+## ✨ Funcionalidades
+
+O sistema oferece uma experiência completa de gestão financeira, incluindo:
+
+- 🔐 **Autenticação:** Login, registro de novos usuários e logout seguro.
+- 🔑 **Gestão de Conta:** Funcionalidade de alteração de senha e atualização de perfil.
+- 🌓 **Personalização:** Suporte nativo a **Modo Claro** e **Modo Escuro**, respeitando a preferência do sistema ou escolha do usuário.
+- 📑 **CRUD de Faturas:** Gerenciamento completo (Criar, Ler, Atualizar e Deletar) de faturas e seus itens.
+- 💰 **Sistema de Pagamentos:** Lógica avançada para pagamentos parciais com distribuição proporcional automática entre os itens da fatura.
+- 📱 **Interface Responsiva:** Design moderno e adaptável para diferentes tamanhos de tela.
+
+---
+
+## 📸 Demonstração da Aplicação
+
+Abaixo, algumas capturas de tela das principais funcionalidades do sistema:
+
+### 📄 Listagem de Faturas
+Interface clara para visualização e gerenciamento de todas as faturas cadastradas.
+![Listagem de Faturas](public/info-readme/invoice-list.png)
+
+### ➕ Criação de Nova Fatura
+Formulário intuitivo para adição de faturas com múltiplos itens e cálculo automático.
+![Nova Fatura](public/info-readme/invoice-new.png)
+
+### 🔍 Detalhes da Fatura
+Visão detalhada de uma fatura específica, exibindo itens e status de pagamento.
+![Detalhes da Fatura](public/info-readme/invoice-detail.png)
+
+### ✏️ Edição de Fatura
+Possibilidade de ajustar informações de faturas existentes de forma simples.
+![Edição de Fatura](public/info-readme/invoice-edit.png)
+
+### 💰 Realização de Pagamento
+Interface para processar pagamentos, com suporte à lógica de distribuição proporcional.
+![Realizar Pagamento](public/info-readme/invoice-pay.png)
+
+### 🗑️ Confirmação de Exclusão
+Segurança garantida através de diálogos de confirmação para ações destrutivas.
+![Confirmar Exclusão](public/info-readme/invoice-confirm-delete.png)
+
+---
+
 ## 🔍 Revisão de Código (Onde começar?)
 
 Se você está revisando este projeto, os principais pontos de interesse que demonstram a arquitetura e as regras de negócio estão aqui:
